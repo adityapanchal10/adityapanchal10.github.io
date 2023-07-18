@@ -2,6 +2,21 @@
 
 let jsonData;
 
+let transposed = false;
+
+function handleClick() {
+    h4 = d3.select('#h4')
+    h4.html("Click on a chord to see the decompositons " + (transposed ? "(Focus: Incoming)" : "(Focus: Outgoing)"));
+    transposed = !transposed; // Toggle the boolean value
+    plotChord() //refresh the page
+}
+
+// Get the button element by its ID
+const button = document.getElementById('toggleButton');
+
+// Add a click event listener to the button, calling handleClick function
+button.addEventListener('click', handleClick);
+
 async function plotChord() {
     try {
 
@@ -20,6 +35,9 @@ async function plotChord() {
             }
             matrix.push(t);
         }
+
+        // transpose to switch to more focus on the outgoing connections
+        let matrix_T = matrix[0].map((_, colIndex) => matrix.map(row => row[colIndex]));
 
         // harcdcoded labels and colors
         let labels = ['H', 'He', 'Li', 'Be', 'B', 'C', 'N', 'O', 'F', 'Ne', 'Na', 'Mg', 'Al', 'Si', 'P', 'S', 'Cl', 'Ar', 'K', 'Ca', 'Sc', 'Ti', 'V', 'Cr', 'Mn', 'Fe', 'Co', 'Ni', 'Cu', 'Zn', 'Ga', 'Ge', 'As', 'Se', 'Br', 'Kr', 'Rb', 'Sr', 'Y', 'Zr', 'Nb', 'Mo', 'Tc', 'Ru', 'Rh', 'Pd', 'Ag', 'Cd', 'In', 'Sn', 'Sb', 'Te', 'I', 'Xe', 'Cs', 'Ba', 'La', 'Ce', 'Pr', 'Nd', 'Pm', 'Sm', 'Eu', 'Gd', 'Tb', 'Dy', 'Ho', 'Er', 'Tm', 'Yb', 'Lu', 'Hf', 'Ta', 'W', 'Re', 'Os', 'Ir', 'Pt', 'Au', 'Hg', 'Tl', 'Pb', 'Bi', 'Po', 'At', 'Rn', 'Fr', 'Ra', 'Ac', 'Th', 'Pa', 'U'];
@@ -47,6 +65,9 @@ async function plotChord() {
             "#dbdb8d", "#9edae5"
         ];
 
+        //remove previous scg if any
+        d3.select("#my_chord").selectAll("svg").remove();
+
         // create the svg area
         var svg = d3.select("#my_chord")
             .append("svg")
@@ -56,9 +77,15 @@ async function plotChord() {
             .attr("transform", "translate(850,550)");
 
         // give this matrix to d3.chord(): it will calculates all the info we need to draw arc and ribbon
-        var res = d3.chord()
-            .padAngle(0.04)
-            (matrix)
+        if (transposed) {
+            var res = d3.chord()
+                .padAngle(0.04)
+                (matrix_T)
+        } else {
+            var res = d3.chord()
+                .padAngle(0.04)
+                (matrix)
+        }
 
         // To show the tooltip when hovered
         var showTooltip = function (d) {
@@ -76,10 +103,17 @@ async function plotChord() {
 
         // Create the tooltip
         var tooltip = d3.tip()
-            .attr("class", "d3-tip")
-            .html(function (d) {
+            .attr("class", "d3-tip");
+        if (transposed) {
+            tooltip.html(function (d) {
+                return "Source: " + labels[d.source.index] + "<br>Target: " + labels[d.target.index];
+            });
+        } else {
+            tooltip.html(function (d) {
                 return "Source: " + labels[d.target.index] + "<br>Target: " + labels[d.source.index];
             });
+        }
+
 
         // Call the tooltip on the SVG
         svg.call(tooltip);
@@ -88,6 +122,7 @@ async function plotChord() {
         // incoming links are thick i.e. links, of group B, where element A decompses into B
         // outgoing links are thin i.e. links, of group A, where element A decompses into B
         // a bit confusing but can be visualized by the 'U' example
+        // to emphasise outgoing links, use matrix_T
         var links = svg
             .datum(res)
             .append("g")
