@@ -71,10 +71,10 @@ async function plotChord() {
         // create the svg area
         var svg = d3.select("#my_chord")
             .append("svg")
-            .attr("width", 1800)
+            .attr("width", 1400)
             .attr("height", 1100)
             .append("g")
-            .attr("transform", "translate(850,550)");
+            .attr("transform", "translate(700,550)");
 
         // give this matrix to d3.chord(): it will calculates all the info we need to draw arc and ribbon
         if (transposed) {
@@ -91,8 +91,8 @@ async function plotChord() {
         var showTooltip = function (d) {
             var x = d3.event.clientX;
             var y = d3.event.clientY;
-            tooltip.style("left", 1250 + "px")
-                .style("top", 200 + "px");
+            tooltip.style("left", 1100 + "px")
+                .style("top", 180 + "px");
             tooltip.show(d);
         }
 
