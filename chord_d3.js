@@ -65,7 +65,7 @@ async function plotChord() {
             var x = d3.event.clientX;
             var y = d3.event.clientY;
             tooltip.style("left", 1250 + "px")
-                .style("top", 70 + "px");
+                .style("top", 200 + "px");
             tooltip.show(d);
         }
 
