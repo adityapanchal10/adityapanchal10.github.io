@@ -13,11 +13,13 @@
     <!-- Create a div where the graph will take place -->
     <div id="my_chord" align="center">
         <h2>Chord diagram of Conway's Audioactive Elements</h2>
-        <h4>Click on a chord to see the decompositons (connections)</h4>
+        <h4 id="h4">Click on a chord to see the decompositons (Focus: Incoming)</h4>
+        <button id="toggleButton" style="top: 20px; left: 20px;">Click here to change focus</button>
     </div>
 
     <!-- Create a div for the tooltip -->
     <div id="tooltip"></div>
+
 
     <script type='module' src="./chord_d3.js"> </script>
 </body>
