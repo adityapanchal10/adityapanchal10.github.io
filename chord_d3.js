@@ -6,7 +6,7 @@ let transposed = false;
 
 function handleClick() {
     let head4 = d3.select('#h4')
-    head4.html("Click on a chord to see the decompositons " + (transposed ? "(Focus: Incoming)" : "(Focus: Outgoing)"));
+    head4.html("Click on a chord to highlight its decompositions " + (transposed ? "(Focus: Incoming)" : "(Focus: Outgoing)"));
     transposed = !transposed; // Toggle the boolean value
     plotChord() //refresh the page
     console.log('Button clicked');
