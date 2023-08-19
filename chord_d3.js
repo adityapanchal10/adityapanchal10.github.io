@@ -5,17 +5,22 @@ let jsonData;
 let transposed = false;
 
 function handleClick() {
-    h4 = d3.select('#h4')
-    h4.html("Click on a chord to see the decompositons " + (transposed ? "(Focus: Incoming)" : "(Focus: Outgoing)"));
+    let head4 = d3.select('#h4')
+    head4.html("Click on a chord to see the decompositons " + (transposed ? "(Focus: Incoming)" : "(Focus: Outgoing)"));
     transposed = !transposed; // Toggle the boolean value
     plotChord() //refresh the page
+    console.log('Button clicked');
 }
 
 // Get the button element by its ID
-const button = document.getElementById('toggleButton');
+document.addEventListener('DOMContentLoaded', function () {
+    const button = document.getElementById('toggleButton');
+    button.addEventListener('click', handleClick);
+});
+// const button = document.getElementById('toggleButton');
 
 // Add a click event listener to the button, calling handleClick function
-button.addEventListener('click', handleClick);
+// button.addEventListener('click', handleClick);
 
 async function plotChord() {
     try {
@@ -68,15 +73,40 @@ async function plotChord() {
         //remove previous scg if any
         d3.select("#my_chord").selectAll("svg").remove();
 
+        // get screen width and height
+        const screenHeight = screen.height;
+        const screenWidth = window.innerWidth;
+
+        // console.log('Screen Height:', screenHeight);
+        // console.log('Screen Width:', screenWidth);
+
+        // Set the dimensions of the SVG element
+        const svgWidth = 1100
+        const svgHeight = 1100
+
+        const chordWidth = svgWidth;
+        const chordHeight = svgHeight;
+
+        // Calculate the translation values to center the SVG
+        const translateX = svgWidth / 2 //(svgWidth - chordWidth) / 2;
+        const translateY = svgHeight / 2 //(svgHeight - chordHeight) / 2;
+
         // create the svg area
         var svg = d3.select("#my_chord")
             .append("svg")
-            .attr("width", 1400)
-            .attr("height", 1100)
+            .attr("width", svgWidth)
+            .attr("height", svgHeight)
+            .attr("display", "flex")
+            .attr("justify-content", "center")
+            .attr("align-items", "center")
             .append("g")
-            .attr("transform", "translate(700,550)");
+            .attr("id", "chord")
+            .attr("width", chordWidth)
+            .attr("height", chordHeight)
+            .attr("transform", `translate(${translateX}, ${translateY})`);
+        // .attr("transform", "translate(-50%, -50%)");
 
-        // give this matrix to d3.chord(): it will calculates all the info we need to draw arc and ribbon
+        // give this matrix to d3.chord(): it will calculate all the info we need to draw arc and ribbon
         if (transposed) {
             var res = d3.chord()
                 .padAngle(0.04)
@@ -91,7 +121,7 @@ async function plotChord() {
         var showTooltip = function (d) {
             var x = d3.event.clientX;
             var y = d3.event.clientY;
-            tooltip.style("left", 1100 + "px")
+            tooltip.style("left", svgWidth - 75 + "px")
                 .style("top", 180 + "px");
             tooltip.show(d);
         }
